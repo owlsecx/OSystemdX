@@ -18,24 +18,20 @@
 
 ## 📌 Overview
 
-Offline systemd service sandboxing & exposure scorer
+
+OSystemdX is an offline, read-only systemd service sandboxing and exposure scorer that discovers units across the full search path and merges drop-ins with correct precedence. It computes a 0.0-10.0 exposure score from 31 weighted sandboxing directives (User/DynamicUser, NoNewPrivileges, Protect*, Restrict*, SystemCallFilter and more) and flags secrets, writable ExecStart paths and 0.0.0.0 sockets. It can generate a hardened override.conf and exports TXT/MD/JSON/CSV/SARIF.
 
 ---
 
 ## ✨ Features
 
-- Offline unit discovery across the full systemd search path (/etc, /run, /usr/local/lib, /usr/lib, /lib, *.control, transient, generators) + user units
-- Drop-in merging (*.d/*.conf) with correct precedence: same-name masking, template, prefix and type-level dirs, empty-assignment resets and per-directive provenance
-- Exposure score 0.0–10.0 from 31 weighted sandboxing directives (User/DynamicUser, NoNewPrivileges, Protect*, Private*, Restrict*, SystemCallFilter, capabilities ...)
-- Implied-setting awareness (DynamicUser, PrivateDevices, PrivateNetwork, NNP side-effects)
-- Risk checks: secrets in Environment= (masked), secrets on command lines, world/non-root writable ExecStart, relative paths, '-' ignore-failure on security prereqs, sockets on 0.0.0.0, restart storms, weakening drop-ins
-- Grades A…F + systemd-style SAFE/OK/MEDIUM/EXPOSED/UNSAFE
-- Hardened override.conf generator (safe / aggressive)
-- CWE / MITRE ATT&CK / CIS Controls v8 mapping
-- Snapshot compare (score deltas, new / fixed findings)
-- Exports: TXT / Markdown / JSON / CSV / SARIF 2.1.0
-- Self-test demo with weak + hardened unit trees
-- Strictly read-only — never touches the analysed system
+
+- Offline unit discovery across /etc, /run, /usr/local/lib, /usr/lib, /lib plus user and transient units
+- Drop-in merging (*.d/*.conf) with correct precedence, masking, resets and per-directive provenance
+- Exposure score 0.0-10.0 from 31 weighted sandboxing directives with implied-setting awareness
+- Risk checks: secrets in Environment=, writable/relative ExecStart, 0.0.0.0 sockets and restart storms
+- Hardened override.conf generator (safe / aggressive) and two-snapshot compare
+- A..F grades, CWE/MITRE/CIS Controls mapping and TXT/MD/JSON/CSV/SARIF export
 
 ---
 
@@ -48,8 +44,13 @@ Offline systemd service sandboxing & exposure scorer
 
 ## 🚀 Usage
 
+
 ```bash
-./OSystemdX
+./OSystemdX --scan --format sarif -o systemd.sarif
+./OSystemdX --unit /etc/systemd/system/myapp.service
+./OSystemdX --scan --top 10 --fail-on high
+./OSystemdX --override nginx.service --profile aggressive
+./OSystemdX --help
 ```
 
 ---
